@@ -1,0 +1,7 @@
+{
+  "name": "SiTelang - Kampung Bunga Telang",
+  "description": "A modern web platform for Dusun Sirat's Butterfly Pea (Bunga Telang) community, featuring product showcase, educational content, and health benefits.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
