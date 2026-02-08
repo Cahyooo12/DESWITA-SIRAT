@@ -6,10 +6,26 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const navigate = useNavigate();
 
     const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+    const [isAuthorized, setIsAuthorized] = React.useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert("Anda belum login! Silakan login terlebih dahulu.");
+            localStorage.removeItem('token');
+            navigate('/admin/login');
+        } else {
+            setIsAuthorized(true);
+        }
+    }, [navigate]);
 
     const handleLogout = () => {
-        localStorage.removeItem('isAdmin');
+        localStorage.removeItem('token');
     };
+
+    if (!isAuthorized) {
+        return null; // Stop rendering content if not authorized
+    }
 
     const navItems = [
         { name: 'Dashboard', path: '/admin/dashboard', icon: 'dashboard' },

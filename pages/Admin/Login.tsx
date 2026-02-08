@@ -10,7 +10,7 @@ const Login: React.FC = () => {
         e.preventDefault();
         // Simple mock login
         if (username === 'admin' && password === 'sitelangsirat123') {
-            localStorage.setItem('isAdmin', 'true');
+            localStorage.setItem('token', 'admin_token_secure_123'); // Set token instead of isAdmin
             navigate('/admin/dashboard');
         } else {
             alert('Username atau password salah!');

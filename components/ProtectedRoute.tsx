@@ -2,11 +2,11 @@ import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
 const ProtectedRoute: React.FC = () => {
-    const isAdmin = localStorage.getItem('isAdmin');
-    console.log('ProtectedRoute Check - isAdmin:', isAdmin);
+    const token = localStorage.getItem('token');
+    console.log('ProtectedRoute Check - token:', token);
 
-    if (isAdmin !== 'true') {
-        console.log('Access denied, redirecting to login...');
+    if (!token) {
+        console.log('Access denied (no token), redirecting to login...');
         return <Navigate to="/admin/login" replace />;
     }
 
