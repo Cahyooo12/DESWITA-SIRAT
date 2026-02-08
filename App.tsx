@@ -7,7 +7,18 @@ import Story from './pages/Story';
 import Benefits from './pages/Benefits';
 import About from './pages/About';
 import Preloader from './components/Preloader';
+import { DataProvider } from './contexts/DataContext';
 import { CartItem } from './types';
+
+// Admin Pages
+import Login from './pages/Admin/Login';
+import Dashboard from './pages/Admin/Dashboard';
+import ProductList from './pages/Admin/Shop/ProductList';
+import ProductForm from './pages/Admin/Shop/ProductForm';
+import EventList from './pages/Admin/Events/EventList';
+import EventForm from './pages/Admin/Events/EventForm';
+import NewsList from './pages/Admin/News/NewsList';
+import NewsForm from './pages/Admin/News/NewsForm';
 
 const Navbar: React.FC<{ cartCount: number }> = ({ cartCount }) => {
   const [scrolled, setScrolled] = useState(false);
@@ -64,6 +75,14 @@ const Navbar: React.FC<{ cartCount: number }> = ({ cartCount }) => {
         </nav>
 
         <div className="flex items-center gap-3">
+          {/* Admin Login Link in Header */}
+          <Link to="/admin/login" className={`flex items-center justify-center size-10 rounded-full transition-all relative ${!isTransparent
+            ? 'bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-primary'
+            : 'bg-white/10 backdrop-blur-md text-white/80 hover:bg-white/20 hover:text-white'
+            }`} title="Admin Login">
+            <span className="material-symbols-outlined text-[20px]">person</span>
+          </Link>
+
           <Link to="/shop" className={`flex items-center justify-center size-10 rounded-full transition-all relative ${!isTransparent
             ? (location.pathname === '/shop' ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'bg-slate-100 text-slate-900 hover:bg-slate-200')
             : 'bg-white/20 backdrop-blur-md text-white border border-white/30 hover:bg-white/30'
@@ -100,6 +119,13 @@ const Navbar: React.FC<{ cartCount: number }> = ({ cartCount }) => {
                 {link.name}
               </Link>
             ))}
+            <Link
+              to="/admin/login"
+              onClick={() => setIsOpen(false)}
+              className="text-slate-600 hover:bg-slate-50 text-sm font-bold p-4 rounded-xl transition-all"
+            >
+              Admin Login
+            </Link>
             <Link
               to="/shop"
               onClick={() => setIsOpen(false)}
@@ -174,9 +200,11 @@ const ScrollToTop = () => {
   return null;
 };
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith('/admin');
 
   const addToCart = (product: any) => {
     setCart(prev => {
@@ -197,23 +225,45 @@ const App: React.FC = () => {
   return (
     <>
       {loading && <Preloader onFinish={() => setLoading(false)} />}
+      <div className={`flex flex-col min-h-screen transition-opacity duration-1000 ${loading ? 'opacity-0' : 'opacity-100'}`}>
+        {!isAdmin && <Navbar cartCount={totalItems} />}
+        <main className={isAdmin ? '' : 'flex-grow'}>
+          <Routes>
+            <Route path="/" element={<Home onAddToCart={addToCart} />} />
+            <Route path="/shop" element={<Shop cart={cart} onAddToCart={addToCart} onUpdateQuantity={updateQuantity} />} />
+            <Route path="/story" element={<Story />} />
+            <Route path="/benefits" element={<Benefits />} />
+            <Route path="/about" element={<About />} />
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<Login />} />
+            <Route path="/admin/login" element={<Login />} />
+            <Route path="/admin/dashboard" element={<Dashboard />} />
+            <Route path="/admin/products" element={<ProductList />} />
+            <Route path="/admin/products/new" element={<ProductForm />} />
+            <Route path="/admin/products/edit/:id" element={<ProductForm />} />
+            <Route path="/admin/events" element={<EventList />} />
+            <Route path="/admin/events/new" element={<EventForm />} />
+            <Route path="/admin/events/edit/:id" element={<EventForm />} />
+            <Route path="/admin/news" element={<NewsList />} />
+            <Route path="/admin/news/new" element={<NewsForm />} />
+            <Route path="/admin/news/edit/:id" element={<NewsForm />} />
+          </Routes>
+        </main>
+        {!isAdmin && <Footer />}
+      </div>
+    </>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <DataProvider>
       <HashRouter>
         <ScrollToTop />
-        <div className={`flex flex-col min-h-screen transition-opacity duration-1000 ${loading ? 'opacity-0' : 'opacity-100'}`}>
-          <Navbar cartCount={totalItems} />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Home onAddToCart={addToCart} />} />
-              <Route path="/shop" element={<Shop cart={cart} onAddToCart={addToCart} onUpdateQuantity={updateQuantity} />} />
-              <Route path="/story" element={<Story />} />
-              <Route path="/benefits" element={<Benefits />} />
-              <Route path="/about" element={<About />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <AppContent />
       </HashRouter>
-    </>
+    </DataProvider>
   );
 };
 

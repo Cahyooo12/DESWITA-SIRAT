@@ -33,3 +33,12 @@ export interface Benefit {
 export interface CartItem extends Product {
   quantity: number;
 }
+
+export interface Event {
+  id: string;
+  date: string;
+  title: string;
+  time: string;
+  location: string;
+  description: string;
+}

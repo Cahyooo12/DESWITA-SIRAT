@@ -1,21 +1,21 @@
-
 import React, { useState } from 'react';
-import { ARTICLES } from '../constants';
+import { useData } from '../contexts/DataContext';
 import EventScheduleModal from '../components/EventScheduleModal';
 
 const Story: React.FC = () => {
+  const { articles } = useData();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showSchedule, setShowSchedule] = useState(false);
 
   const categories = [
     { name: 'Events & Festival', count: 0 },
-    { name: 'Produk & UMKM', count: ARTICLES.filter(a => a.category === 'Produk & UMKM').length },
-    { name: 'Kisah Komunitas', count: ARTICLES.filter(a => a.category === 'Kisah Komunitas').length },
+    { name: 'Produk & UMKM', count: articles.filter(a => a.category === 'Produk & UMKM').length },
+    { name: 'Kisah Komunitas', count: articles.filter(a => a.category === 'Kisah Komunitas').length },
     { name: 'Tips Kesehatan', count: 0 }
   ];
 
-  const filteredArticles = ARTICLES.filter(article => {
+  const filteredArticles = articles.filter(article => {
     const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       article.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory ? article.category === selectedCategory : true;
@@ -167,8 +167,8 @@ const Story: React.FC = () => {
             <div className="purple-gradient rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl">
               <div className="absolute top-0 right-0 size-40 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
               <span className="material-symbols-outlined text-4xl mb-6 text-purple-200">festival</span>
-              <h4 className="text-2xl font-black mb-4 leading-tight">Ikuti Festival Panen Raya!</h4>
-              <p className="text-white/70 text-sm leading-relaxed mb-8">Setiap bulan Oktober, Dusun Sirat merayakan keajaiban bunga telang dengan festival budaya dan bazar rakyat.</p>
+              <h4 className="text-2xl font-black mb-4 leading-tight">Ikuti Festival Dusun Sirat!</h4>
+              <p className="text-white/70 text-sm leading-relaxed mb-8">Jangan lewatkan, pantau terus jadwal keseruan di Dusun Sirat!</p>
               <button
                 onClick={() => setShowSchedule(true)}
                 className="w-full py-4 bg-white text-primary rounded-xl font-black text-xs uppercase tracking-widest shadow-xl hover:translate-y-1 transition-transform"

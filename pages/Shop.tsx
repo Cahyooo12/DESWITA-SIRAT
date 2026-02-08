@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { PRODUCTS } from '../constants';
+import { useData } from '../contexts/DataContext';
 import { CartItem, Product } from '../types';
 
 interface ShopProps {
@@ -8,6 +7,8 @@ interface ShopProps {
   onAddToCart: (p: Product) => void;
   onUpdateQuantity: (id: string, qty: number) => void;
 }
+
+// ... (ProductDetailModal and CheckoutModal remain unchanged for now, assumed to be using passed props)
 
 const ProductDetailModal: React.FC<{ product: Product; isOpen: boolean; onClose: () => void; onAddToCart: (p: Product) => void }> = ({ product, isOpen, onClose, onAddToCart }) => {
   if (!isOpen) return null;
@@ -181,12 +182,13 @@ const CheckoutModal: React.FC<{ isOpen: boolean; onClose: () => void; cart: Cart
 }
 
 const Shop: React.FC<ShopProps> = ({ cart, onAddToCart, onUpdateQuantity }) => {
+  const { products } = useData();
   const [filter, setFilter] = useState<'All' | 'Drink' | 'Care' | 'Seed'>('All');
   const [showCart, setShowCart] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [showCheckout, setShowCheckout] = useState(false);
 
-  const filteredProducts = filter === 'All' ? PRODUCTS : PRODUCTS.filter(p => p.category === filter);
+  const filteredProducts = filter === 'All' ? products : products.filter(p => p.category === filter);
   const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
