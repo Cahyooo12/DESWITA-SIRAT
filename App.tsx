@@ -9,6 +9,7 @@ import About from './pages/About';
 import Preloader from './components/Preloader';
 import { DataProvider } from './contexts/DataContext';
 import { CartItem } from './types';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Admin Pages
 import Login from './pages/Admin/Login';
@@ -238,16 +239,19 @@ const AppContent: React.FC = () => {
             {/* Admin Routes */}
             <Route path="/admin" element={<Login />} />
             <Route path="/admin/login" element={<Login />} />
-            <Route path="/admin/dashboard" element={<Dashboard />} />
-            <Route path="/admin/products" element={<ProductList />} />
-            <Route path="/admin/products/new" element={<ProductForm />} />
-            <Route path="/admin/products/edit/:id" element={<ProductForm />} />
-            <Route path="/admin/events" element={<EventList />} />
-            <Route path="/admin/events/new" element={<EventForm />} />
-            <Route path="/admin/events/edit/:id" element={<EventForm />} />
-            <Route path="/admin/news" element={<NewsList />} />
-            <Route path="/admin/news/new" element={<NewsForm />} />
-            <Route path="/admin/news/edit/:id" element={<NewsForm />} />
+
+            <Route element={<ProtectedRoute />}>
+              <Route path="/admin/dashboard" element={<Dashboard />} />
+              <Route path="/admin/products" element={<ProductList />} />
+              <Route path="/admin/products/new" element={<ProductForm />} />
+              <Route path="/admin/products/edit/:id" element={<ProductForm />} />
+              <Route path="/admin/events" element={<EventList />} />
+              <Route path="/admin/events/new" element={<EventForm />} />
+              <Route path="/admin/events/edit/:id" element={<EventForm />} />
+              <Route path="/admin/news" element={<NewsList />} />
+              <Route path="/admin/news/new" element={<NewsForm />} />
+              <Route path="/admin/news/edit/:id" element={<NewsForm />} />
+            </Route>
           </Routes>
         </main>
         {!isAdmin && <Footer />}

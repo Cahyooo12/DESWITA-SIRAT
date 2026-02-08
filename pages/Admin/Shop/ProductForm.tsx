@@ -56,8 +56,8 @@ const ProductForm: React.FC = () => {
             <div className="max-w-3xl mx-auto">
                 <h1 className="text-3xl font-black text-slate-900 mb-8">{id ? 'Edit Produk' : 'Tambah Produk Baru'}</h1>
 
-                <form onSubmit={handleSubmit} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
-                    <div className="grid grid-cols-2 gap-6">
+                <form onSubmit={handleSubmit} className="bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="col-span-2">
                             <label className="block text-sm font-bold text-slate-700 mb-2">Nama Produk</label>
                             <input

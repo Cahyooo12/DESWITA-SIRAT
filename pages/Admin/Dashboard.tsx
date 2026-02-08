@@ -29,7 +29,7 @@ const Dashboard: React.FC = () => {
                 ))}
             </div>
 
-            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+            <div className="bg-white p-6 lg:p-8 rounded-3xl border border-slate-100 shadow-sm">
                 <h2 className="text-xl font-bold text-slate-900 mb-4">Selamat Datang di Admin Panel</h2>
                 <p className="text-slate-500">
                     Gunakan menu di samping untuk mengelola Produk, Event, dan Berita.

@@ -18,8 +18,8 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50">
-            <div className="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-slate-100">
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+            <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-xl w-full max-w-md border border-slate-100">
                 <div className="text-center mb-8">
                     <div className="size-20 mx-auto mb-6 bg-white rounded-2xl shadow-lg border border-slate-50 p-2 flex items-center justify-center">
                         <img src="https://uploads.onecompiler.io/43w9rf9r9/44brtpuy2/image_2026-01-27_002804190.png" alt="Logo" className="w-full h-full object-cover rounded-xl" />
