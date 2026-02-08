@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AdminLayout from '../../../layouts/AdminLayout';
+import ImageUpload from '../../../components/ImageUpload';
 import { useData } from '../../../contexts/DataContext';
 import { Product } from '../../../types';
 
@@ -15,10 +16,10 @@ const ProductForm: React.FC = () => {
         price: 0,
         description: '',
         category: 'Drink',
-        image: '',
+        images: [],
         ingredients: '',
         usage: '',
-        size: ''
+        sizes: []
     });
 
     useEffect(() => {
@@ -41,12 +42,19 @@ const ProductForm: React.FC = () => {
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        // Prepare data for submission, ensuring legacy fields are populated
+        const submissionData = {
+            ...formData,
+            image: formData.images?.[0] || '',
+            size: formData.sizes?.[0] || ''
+        };
+
         if (id) {
-            updateProduct(formData);
+            await updateProduct(submissionData);
         } else {
-            addProduct(formData);
+            await addProduct(submissionData);
         }
         navigate('/admin/products');
     };
@@ -97,15 +105,11 @@ const ProductForm: React.FC = () => {
                         </div>
 
                         <div className="col-span-2">
-                            <label className="block text-sm font-bold text-slate-700 mb-2">URL Gambar</label>
-                            <input
-                                type="text"
-                                name="image"
-                                value={formData.image}
-                                onChange={handleChange}
-                                required
-                                placeholder="https://..."
-                                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                            <ImageUpload
+                                value={formData.images || []}
+                                onChange={(value) => setFormData(prev => ({ ...prev, images: value as string[] }))}
+                                label="Foto Produk (Bisa banyak)"
+                                multiple
                             />
                         </div>
 
@@ -143,15 +147,55 @@ const ProductForm: React.FC = () => {
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-bold text-slate-700 mb-2">Ukuran/Kemasan (Optional)</label>
-                            <input
-                                type="text"
-                                name="size"
-                                value={formData.size || ''}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                            />
+                        <div className="col-span-2">
+                            <label className="block text-sm font-bold text-slate-700 mb-2">Varian Ukuran/Kemasan</label>
+                            <div className="flex flex-wrap gap-2 mb-3">
+                                {formData.sizes?.map((size, idx) => (
+                                    <span key={idx} className="px-3 py-1 bg-primary/10 text-primary rounded-lg font-bold text-sm flex items-center gap-2">
+                                        {size}
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({ ...prev, sizes: prev.sizes?.filter((_, i) => i !== idx) }))}
+                                            className="hover:text-red-500"
+                                        >
+                                            <span className="material-symbols-outlined text-sm">close</span>
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Contoh: 50 gram, 100 gram, Botol 250ml"
+                                    className="flex-1 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            const val = e.currentTarget.value.trim();
+                                            if (val) {
+                                                setFormData(prev => ({ ...prev, sizes: [...(prev.sizes || []), val] }));
+                                                e.currentTarget.value = '';
+                                            }
+                                        }
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                                        const val = input.value.trim();
+                                        if (val) {
+                                            setFormData(prev => ({ ...prev, sizes: [...(prev.sizes || []), val] }));
+                                            input.value = '';
+                                        }
+                                    }}
+                                    className="px-6 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-300 transition-colors"
+                                >
+                                    Tambah
+                                </button>
+                            </div>
+                            <p className="text-xs text-slate-400 mt-2">Tekan Enter atau klik Tambah untuk memasukkan varian.</p>
+
                         </div>
 
                     </div>

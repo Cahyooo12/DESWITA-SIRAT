@@ -11,12 +11,29 @@ interface ShopProps {
 // ... (ProductDetailModal and CheckoutModal remain unchanged for now, assumed to be using passed props)
 
 const ProductDetailModal: React.FC<{ product: Product; isOpen: boolean; onClose: () => void; onAddToCart: (p: Product) => void }> = ({ product, isOpen, onClose, onAddToCart }) => {
+  const [activeTab, setActiveTab] = useState<'desc' | 'ingredients' | 'usage'>('desc');
+  const [selectedImage, setSelectedImage] = useState<string>(product.images?.[0] || product.image);
+  const [selectedSize, setSelectedSize] = useState<string>(product.sizes?.[0] || product.size || '');
+  const [quantity, setQuantity] = useState(1);
+
+  // Reset state when product changes
+  React.useEffect(() => {
+    if (product) {
+      setSelectedImage(product.images?.[0] || product.image);
+      setSelectedSize(product.sizes?.[0] || product.size || '');
+      setActiveTab('desc');
+      setQuantity(1);
+    }
+  }, [product]);
+
   if (!isOpen) return null;
+
+  const images = product.images && product.images.length > 0 ? product.images : [product.image];
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity animate-in fade-in duration-300" onClick={onClose}></div>
-      <div className="relative w-full max-w-4xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] animate-in zoom-in-95 duration-300">
+      <div className="relative w-full max-w-5xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row h-[90vh] md:h-auto md:max-h-[90vh] animate-in zoom-in-95 duration-300">
 
         {/* Close Button */}
         <button
@@ -26,79 +43,152 @@ const ProductDetailModal: React.FC<{ product: Product; isOpen: boolean; onClose:
           <span className="material-symbols-outlined">close</span>
         </button>
 
-        {/* Image Section */}
-        <div className="w-full md:w-1/2 h-[300px] md:h-auto relative bg-slate-100">
-          <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-          <div className="absolute bottom-6 left-6 flex flex-wrap gap-2">
-            <span className="px-3 py-1.5 rounded-xl bg-white/90 backdrop-blur-md text-xs font-black uppercase tracking-widest text-primary shadow-sm">
-              {product.category === 'Drink' ? 'Minuman' : product.category === 'Care' ? 'Perawatan' : 'Bibit'}
-            </span>
+        {/* LEFT: Image Gallery */}
+        <div className="w-full md:w-1/2 bg-slate-50 p-6 flex flex-col gap-4">
+          <div className="relative aspect-square rounded-[2rem] overflow-hidden bg-white shadow-sm flex-1">
+            <img src={selectedImage} alt={product.name} className="w-full h-full object-cover" />
+            <div className="absolute top-4 left-4">
+              <span className="px-3 py-1.5 rounded-xl bg-white/90 backdrop-blur-md text-xs font-black uppercase tracking-widest text-primary shadow-sm border border-white/50">
+                {product.category === 'Drink' ? 'Minuman' : product.category === 'Care' ? 'Perawatan' : 'Bibit'}
+              </span>
+            </div>
           </div>
+          {/* Thumbnails */}
+          {images.length > 1 && (
+            <div className="flex gap-3 overflow-x-auto pb-2 snap-x hide-scrollbar">
+              {images.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedImage(img)}
+                  className={`flex-shrink-0 size-20 rounded-xl overflow-hidden border-2 transition-all snap-start ${selectedImage === img ? 'border-primary ring-2 ring-primary/20 scale-95' : 'border-slate-200 hover:border-primary/50'}`}
+                >
+                  <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Content Section */}
-        <div className="flex-1 p-8 md:p-10 flex flex-col overflow-y-auto bg-white">
+        {/* RIGHT: Content Section */}
+        <div className="flex-1 p-6 md:p-10 flex flex-col overflow-y-auto bg-white">
           <div className="mb-6">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight mb-2 tracking-tight">{product.name}</h2>
-            <p className="text-2xl font-black text-primary">Rp{product.price.toLocaleString()}</p>
+            <div className="flex items-center gap-3">
+              <p className="text-2xl font-black text-primary">Rp{product.price.toLocaleString()}</p>
+              <div className="flex text-yellow-400 text-sm">
+                {[1, 2, 3, 4, 5].map(i => <span key={i} className="material-symbols-outlined text-[18px] fill-current">star</span>)}
+                <span className="text-slate-400 font-bold ml-1 text-xs mt-0.5">(12 Ulasan)</span>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-8 flex-1">
-            <div>
-              <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                <span className="material-symbols-outlined text-lg">description</span> Deskripsi
-              </h3>
-              <p className="text-slate-600 leading-relaxed text-base">{product.description}</p>
+          {/* Variants / Sizes */}
+          {product.sizes && product.sizes.length > 0 && (
+            <div className="mb-8">
+              <h3 className="text-sm font-bold text-slate-900 mb-3">Varian Ukuran</h3>
+              <div className="flex flex-wrap gap-3">
+                {product.sizes.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`px-4 py-2 rounded-xl border font-bold text-sm transition-all ${selectedSize === size
+                      ? 'border-primary bg-primary text-white shadow-lg shadow-primary/20 transform scale-105'
+                      : 'border-slate-200 text-slate-600 hover:border-primary/50 hover:bg-slate-50'
+                      }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
             </div>
+          )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {product.ingredients && (
-                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
-                  <h3 className="text-xs font-black text-primary uppercase tracking-widest mb-2 flex items-center gap-2">
-                    <span className="material-symbols-outlined">ecg_heart</span> Bahan Baku
-                  </h3>
-                  <p className="text-sm text-slate-600 font-medium leading-relaxed">{product.ingredients}</p>
+          {/* Tabs Navigation */}
+          <div className="flex border-b border-slate-100 mb-6">
+            {[
+              { id: 'desc', label: 'Deskripsi' },
+              { id: 'ingredients', label: 'Manfaat', disabled: !product.ingredients },
+              { id: 'usage', label: 'Cara Penyajian', disabled: !product.usage }
+            ].map(tab => (
+              !tab.disabled && (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`px-0 py-3 mr-6 text-sm font-bold border-b-2 transition-all ${activeTab === tab.id
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-slate-400 hover:text-slate-600'
+                    }`}
+                >
+                  {tab.label}
+                </button>
+              )
+            ))}
+          </div>
+
+          {/* Tab Content */}
+          <div className="flex-1 min-h-[100px]">
+            {activeTab === 'desc' && (
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <p className="text-slate-600 leading-relaxed">{product.description}</p>
+              </div>
+            )}
+            {activeTab === 'ingredients' && product.ingredients && (
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="bg-green-50/50 p-4 rounded-xl border border-green-100">
+                  <p className="text-slate-700 leading-relaxed font-medium">{product.ingredients}</p>
                 </div>
-              )}
-
-              {product.usage && (
-                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
-                  <h3 className="text-xs font-black text-primary uppercase tracking-widest mb-2 flex items-center gap-2">
-                    <span className="material-symbols-outlined">local_cafe</span> Saran Penyajian
-                  </h3>
-                  <p className="text-sm text-slate-600 font-medium leading-relaxed">{product.usage}</p>
+              </div>
+            )}
+            {activeTab === 'usage' && product.usage && (
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="bg-orange-50/50 p-4 rounded-xl border border-orange-100">
+                  <p className="text-slate-700 leading-relaxed font-medium">{product.usage}</p>
                 </div>
-              )}
-            </div>
-
-            {product.size && (
-              <div className="flex items-center gap-3 text-slate-500 font-bold text-sm bg-slate-50 p-3 rounded-xl w-fit">
-                <span className="material-symbols-outlined">inventory_2</span>
-                <span>Kemasan: {product.size}</span>
               </div>
             )}
           </div>
 
-          <div className="mt-8 pt-6 border-t border-slate-100">
+          {/* Footer Action */}
+          <div className="mt-8 pt-6 border-t border-slate-100 flex gap-4 items-center">
+            <div className="flex items-center gap-3 bg-slate-50 rounded-2xl px-4 py-3 border border-slate-100">
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="size-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-slate-500 hover:text-primary transition-colors disabled:opacity-50"
+                disabled={quantity <= 1}
+              >
+                <span className="material-symbols-outlined text-sm">remove</span>
+              </button>
+              <span className="font-black text-slate-900 w-4 text-center">{quantity}</span>
+              <button
+                onClick={() => setQuantity(quantity + 1)}
+                className="size-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-slate-500 hover:text-primary transition-colors"
+              >
+                <span className="material-symbols-outlined text-sm">add</span>
+              </button>
+            </div>
             <button
               onClick={() => {
-                onAddToCart(product);
+                for (let i = 0; i < quantity; i++) {
+                  onAddToCart({ ...product, size: selectedSize });
+                }
                 onClose();
               }}
-              className="w-full py-5 bg-primary text-white rounded-2xl font-black text-base uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:brightness-110 active:scale-95 transition-all"
+              className="flex-1 py-4 bg-primary text-white rounded-2xl font-black text-base uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:brightness-110 active:scale-95 transition-all"
             >
-              <span className="material-symbols-outlined text-2xl">add_shopping_cart</span>
-              Masukkan Keranjang
+              <span className="material-symbols-outlined text-2xl">shopping_bag</span>
+              Tambah ke Keranjang
             </button>
           </div>
+
         </div>
       </div>
     </div>
   );
 };
 
-const CheckoutModal: React.FC<{ isOpen: boolean; onClose: () => void; cart: CartItem[]; totalPrice: number }> = ({ isOpen, onClose, cart, totalPrice }) => {
+const CartModal: React.FC<{ isOpen: boolean; onClose: () => void; cart: CartItem[]; onUpdateQuantity: (id: string, qty: number) => void }> = ({ isOpen, onClose, cart, onUpdateQuantity }) => {
   const [formData, setFormData] = useState({ name: '', address: '', note: '' });
+  const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   if (!isOpen) return null;
 
@@ -112,7 +202,7 @@ const CheckoutModal: React.FC<{ isOpen: boolean; onClose: () => void; cart: Cart
       `Catatan: ${formData.note || '-'}\n\n` +
       `Pesanan:\n` +
       cart.map(item => `- ${item.name} (${item.quantity}x) - Rp${(item.price * item.quantity).toLocaleString()}`).join('\n') +
-      `\n\nTotal: Rp${totalPrice.toLocaleString()}\n\nMohon informasi pembayarannya. Terima kasih!`
+      `\n\nTotal: Rp${total.toLocaleString()}\n\nMohon informasi pembayarannya. Terima kasih!`
     );
     window.open(`https://wa.me/6285229312990?text=${message}`, '_blank');
     onClose();
@@ -120,62 +210,134 @@ const CheckoutModal: React.FC<{ isOpen: boolean; onClose: () => void; cart: Cart
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm animate-in fade-in" onClick={onClose}></div>
-      <div className="relative w-full max-w-lg bg-white rounded-[2rem] p-8 shadow-2xl animate-in zoom-in-95">
-        <h2 className="text-2xl font-black text-slate-900 mb-6 flex items-center gap-2">
-          <span className="material-symbols-outlined text-primary">assignment</span>
-          Data Pemesanan
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">Nama Lengkap</label>
-            <input
-              required
-              type="text"
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
-              placeholder="Masukkan nama Anda"
-              value={formData.name}
-              onChange={e => setFormData({ ...formData, name: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">Alamat Pengiriman</label>
-            <textarea
-              required
-              rows={3}
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium resize-none"
-              placeholder="Masukkan alamat lengkap..."
-              value={formData.address}
-              onChange={e => setFormData({ ...formData, address: e.target.value })}
-            ></textarea>
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">Catatan (Opsional)</label>
-            <input
-              type="text"
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
-              placeholder="Tambahan catatan pesanan"
-              value={formData.note}
-              onChange={e => setFormData({ ...formData, note: e.target.value })}
-            />
-          </div>
+      <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity animate-in fade-in" onClick={onClose}></div>
+      <div className="relative w-full max-w-5xl bg-[#f8f7fa] rounded-[2rem] overflow-hidden shadow-2xl animate-in zoom-in-95 flex flex-col max-h-[90vh]">
 
-          <div className="pt-4 flex gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              className="flex-[2] py-3 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-green-500/20 active:scale-[0.98] transition-all"
-            >
-              Lanjut ke WhatsApp <span className="material-symbols-outlined text-lg">arrow_forward</span>
-            </button>
+        {/* Header */}
+        <div className="bg-white px-6 py-4 flex items-center justify-between border-b border-slate-100">
+          <div>
+            <h2 className="text-xl font-black text-slate-900 tracking-tight">Keranjang Belanja Anda</h2>
+            <p className="text-slate-500 text-xs text-base">Periksa kembali pesanan produk lokal Anda sebelum checkout.</p>
           </div>
-        </form>
+          <button onClick={onClose} className="size-10 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-500 transition-colors">
+            <span className="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6 md:p-8">
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+
+            {/* LEFT: Cart Items */}
+            <div className="w-full lg:flex-[3] space-y-4">
+              {cart.length === 0 ? (
+                <div className="bg-white rounded-3xl p-10 text-center border border-slate-100 shadow-sm">
+                  <div className="size-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="material-symbols-outlined text-4xl text-slate-300">shopping_cart_off</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-800 mb-2">Keranjang Kosong</h3>
+                  <button onClick={onClose} className="text-primary font-bold text-sm hover:underline">Mulai Belanja</button>
+                </div>
+              ) : (
+                cart.map(item => (
+                  <div key={item.id} className="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4 md:gap-6">
+                    <div className="size-20 md:size-24 rounded-2xl bg-slate-50 overflow-hidden flex-shrink-0">
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-slate-900 text-base md:text-lg mb-1 truncate">{item.name}</h4>
+                      <p className="hidden md:block text-slate-500 text-xs mb-2">Stok tersedia</p>
+                      <p className="text-slate-900 font-bold text-base md:text-xl">Rp{item.price.toLocaleString()}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center bg-slate-50 rounded-xl p-1 border border-slate-200">
+                        <button
+                          onClick={() => onUpdateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                          className="size-8 rounded-lg flex items-center justify-center hover:bg-white hover:shadow-sm text-slate-600 transition-all font-bold disabled:opacity-50"
+                          disabled={item.quantity <= 1}
+                        >
+                          -
+                        </button>
+                        <span className="w-8 text-center text-sm font-bold text-slate-900">{item.quantity}</span>
+                        <button
+                          onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                          className="size-8 rounded-lg flex items-center justify-center hover:bg-white hover:shadow-sm text-slate-900 transition-all font-bold"
+                        >
+                          +
+                        </button>
+                      </div>
+                      <button
+                        onClick={() => onUpdateQuantity(item.id, 0)}
+                        className="size-10 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all"
+                        title="Hapus"
+                      >
+                        <span className="material-symbols-outlined text-[20px]">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* RIGHT: Delivery Details */}
+            <div className="w-full lg:flex-[2] bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-lg lg:sticky lg:top-0">
+              <h3 className="text-lg font-bold text-slate-900 mb-1">Detail Pengiriman</h3>
+              <p className="text-slate-500 text-xs mb-6">Lengkapi data untuk estimasi ongkir via WhatsApp.</p>
+
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 ml-1">Nama Lengkap</label>
+                  <input
+                    required
+                    type="text"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-primary/20 text-sm font-medium"
+                    placeholder="Masukkan nama anda"
+                    value={formData.name}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 ml-1">Alamat Pengiriman</label>
+                  <textarea
+                    required
+                    rows={3}
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-primary/20 text-sm font-medium resize-none"
+                    placeholder="Masukkan alamat lengkap..."
+                    value={formData.address}
+                    onChange={e => setFormData({ ...formData, address: e.target.value })}
+                  ></textarea>
+                </div>
+
+                <div className="py-4 border-t border-slate-50 space-y-2">
+                  <div className="flex justify-between text-sm text-slate-500">
+                    <span>Subtotal ({cart.reduce((s, i) => s + i.quantity, 0)} item)</span>
+                    <span className="font-bold text-slate-900">Rp{total.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-slate-500 items-center">
+                    <span>Estimasi Ongkir</span>
+                    <span className="text-[10px] italic text-slate-400">Dihitung via WA</span>
+                  </div>
+                  <div className="flex justify-between text-lg font-black text-primary pt-2 mt-2 border-t border-dashed border-slate-200">
+                    <span>Total</span>
+                    <span>Rp{total.toLocaleString()}</span>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={cart.length === 0}
+                  className="w-full py-4 bg-primary hover:bg-[#3a0066] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary/20 active:scale-[0.98] transition-all"
+                >
+                  <span className="material-symbols-outlined">chat</span>
+                  Beli via WhatsApp
+                </button>
+                <p className="text-[10px] text-center text-slate-400 leading-tight px-4">
+                  Transaksi aman & terpercaya langsung dengan pengelola desa.
+                </p>
+              </form>
+            </div>
+
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -184,13 +346,10 @@ const CheckoutModal: React.FC<{ isOpen: boolean; onClose: () => void; cart: Cart
 const Shop: React.FC<ShopProps> = ({ cart, onAddToCart, onUpdateQuantity }) => {
   const { products } = useData();
   const [filter, setFilter] = useState<'All' | 'Drink' | 'Care' | 'Seed'>('All');
-  const [showCart, setShowCart] = useState(false);
+  const [showCartModal, setShowCartModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [showCheckout, setShowCheckout] = useState(false);
 
   const filteredProducts = filter === 'All' ? products : products.filter(p => p.category === filter);
-  const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const categories = [
     { id: 'All', label: 'Semua', icon: 'storefront' },
@@ -227,26 +386,23 @@ const Shop: React.FC<ShopProps> = ({ cart, onAddToCart, onUpdateQuantity }) => {
       {/* Main Content Layout */}
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 pb-24 flex flex-col lg:flex-row gap-8 lg:gap-12">
 
-        {/* Category Navigation - Sticky Horizontal on Mobile, Sidebar on Desktop */}
+        {/* Category Navigation */}
         <aside className="lg:w-64 flex-shrink-0 sticky top-20 z-40 lg:z-0 -mx-4 px-4 lg:mx-0 lg:px-0 bg-[#faf9fc]/95 backdrop-blur-sm lg:bg-transparent lg:backdrop-blur-none py-2 lg:py-0">
           <div className="lg:sticky lg:top-24 space-y-6">
-
-            {/* Mobile: Horizontal Scroll, Desktop: Vertical List */}
             <div className="flex lg:flex-col gap-3 overflow-x-auto pb-4 lg:pb-0 hide-scrollbar snap-x">
               {categories.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setFilter(cat.id as any)}
                   className={`flex-shrink-0 snap-start px-5 py-3 lg:py-4 rounded-xl lg:rounded-2xl font-bold text-sm transition-all flex items-center gap-3 group border ${filter === cat.id
-                    ? 'bg-primary border-primary text-white shadow-lg shadow-primary/25 translate-y-0 lg:translate-x-2'
-                    : 'bg-white border-slate-100 text-slate-500 hover:border-primary/30 hover:text-primary hover:shadow-md'
+                    ? 'bg-primary border-primary text-white shadow-md shadow-primary/10'
+                    : 'bg-white border-slate-100 text-slate-500 hover:border-primary/30 hover:text-primary hover:shadow-sm hover:bg-slate-50'
                     }`}
                 >
                   <span className={`material-symbols-outlined text-[20px] ${filter === cat.id ? 'text-white' : 'text-slate-400 group-hover:text-primary'}`}>
                     {cat.icon}
                   </span>
                   <span className="whitespace-nowrap">{cat.label}</span>
-                  {filter === cat.id && <span className="material-symbols-outlined ml-auto text-sm hidden lg:block">chevron_right</span>}
                 </button>
               ))}
             </div>
@@ -284,7 +440,7 @@ const Shop: React.FC<ShopProps> = ({ cart, onAddToCart, onUpdateQuantity }) => {
                 {/* Image Area */}
                 <div className="relative aspect-[4/3] rounded-[1.5rem] overflow-hidden bg-slate-100 mb-4">
                   <img
-                    src={product.image}
+                    src={product.images?.[0] || product.image || ''}
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
@@ -324,7 +480,7 @@ const Shop: React.FC<ShopProps> = ({ cart, onAddToCart, onUpdateQuantity }) => {
                       <span className="material-symbols-outlined text-[16px]">inventory_2</span>
                       <span className="text-[10px] font-bold truncate max-w-[80px]">{product.size?.split(' ').slice(0, 2).join(' ')}</span>
                     </div>
-                    {/* Mobile Only Add Button (Visible always on mobile since hover doesn't exist) */}
+                    {/* Mobile Only Add Button */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -352,84 +508,17 @@ const Shop: React.FC<ShopProps> = ({ cart, onAddToCart, onUpdateQuantity }) => {
         />
       )}
 
-      {/* Checkout Form Modal */}
-      <CheckoutModal
-        isOpen={showCheckout}
-        onClose={() => setShowCheckout(false)}
+      {/* Unified Cart Modal */}
+      <CartModal
+        isOpen={showCartModal}
+        onClose={() => setShowCartModal(false)}
         cart={cart}
-        totalPrice={cartTotal}
+        onUpdateQuantity={onUpdateQuantity}
       />
 
-      {/* Cart Drawer */}
-      {showCart && (
-        <div className="fixed inset-0 z-[60] flex justify-end">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setShowCart(false)}></div>
-          <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-slide-in-right">
-            <div className="p-6 md:p-8 border-b border-slate-100 bg-white flex justify-between items-center sticky top-0 z-10">
-              <div>
-                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Keranjang</h2>
-                <p className="text-slate-500 text-xs font-medium">{totalItems} item dipilih</p>
-              </div>
-              <button onClick={() => setShowCart(false)} className="size-10 flex items-center justify-center rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 transition-colors">
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              {cart.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-4">
-                  <div className="size-24 rounded-full bg-slate-50 flex items-center justify-center mb-2">
-                    <span className="material-symbols-outlined text-4xl opacity-30">shopping_cart_off</span>
-                  </div>
-                  <p className="text-lg font-bold text-slate-600">Keranjang Kosong</p>
-                  <button onClick={() => setShowCart(false)} className="text-primary text-sm font-bold hover:underline">Mulai Jelajahi Produk</button>
-                </div>
-              ) : (
-                cart.map((item) => (
-                  <div key={item.id} className="flex gap-4 p-3 rounded-2xl border border-slate-50 bg-slate-50/50 hover:border-primary/10 transition-colors group">
-                    <div className="size-20 rounded-xl overflow-hidden bg-white shadow-sm flex-shrink-0">
-                      <img src={item.image} className="w-full h-full object-cover" alt="" />
-                    </div>
-                    <div className="flex-1 flex flex-col justify-between py-0.5">
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-sm leading-tight mb-1 line-clamp-2">{item.name}</h4>
-                        <p className="text-primary font-black text-sm">Rp{item.price.toLocaleString()}</p>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3 bg-white rounded-lg border border-slate-200 p-1 shadow-sm">
-                          <button onClick={() => onUpdateQuantity(item.id, item.quantity - 1)} className="size-6 rounded-md flex items-center justify-center text-slate-500 hover:bg-slate-100 disabled:opacity-50"><span className="material-symbols-outlined text-sm">remove</span></button>
-                          <span className="font-bold text-xs w-4 text-center">{item.quantity}</span>
-                          <button onClick={() => onUpdateQuantity(item.id, item.quantity + 1)} className="size-6 rounded-md flex items-center justify-center text-primary bg-primary/5 hover:bg-primary hover:text-white transition-colors"><span className="material-symbols-outlined text-sm">add</span></button>
-                        </div>
-                        <span className="text-slate-400 text-[10px] font-medium">Rp{(item.price * item.quantity).toLocaleString()}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {cart.length > 0 && (
-              <div className="p-6 md:p-8 bg-white border-t border-slate-100 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] sticky bottom-0 z-10">
-                <div className="flex justify-between items-end mb-6">
-                  <span className="text-slate-500 font-bold text-sm">Total Estimasi</span>
-                  <span className="text-3xl font-black text-slate-900 tracking-tight">Rp{cartTotal.toLocaleString()}</span>
-                </div>
-                <button
-                  onClick={() => setShowCheckout(true)}
-                  className="w-full py-4 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-xl font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-3 shadow-lg shadow-green-500/20 active:scale-[0.98] transition-all"
-                >
-                  <span className="material-symbols-outlined text-xl">chat</span> Pesan via WhatsApp
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Floating Toggle */}
+      {/* Floating Cart Trigger */}
       <button
-        onClick={() => setShowCart(true)}
+        onClick={() => setShowCartModal(true)}
         className="fixed bottom-10 right-10 size-20 purple-gradient text-white rounded-3xl shadow-2xl flex items-center justify-center z-50 hover:scale-110 active:scale-95 transition-all duration-300 group"
       >
         <span className="material-symbols-outlined text-3xl group-hover:rotate-12 transition-transform">shopping_bag</span>
@@ -456,8 +545,10 @@ const Shop: React.FC<ShopProps> = ({ cart, onAddToCart, onUpdateQuantity }) => {
           animation: slide-in-right 0.3s ease-out forwards;
         }
       `}</style>
+
     </div>
   );
 };
+
 
 export default Shop;

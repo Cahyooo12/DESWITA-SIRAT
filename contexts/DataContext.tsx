@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { dbService } from '../services/db';
 import { Product, Article, Event } from '../types';
 import { PRODUCTS, ARTICLES } from '../constants';
 
@@ -48,19 +49,19 @@ const INITIAL_EVENTS: Event[] = [
 
 interface DataContextType {
     products: Product[];
-    addProduct: (product: Product) => void;
-    updateProduct: (product: Product) => void;
-    deleteProduct: (id: string) => void;
+    addProduct: (product: Product) => Promise<void>;
+    updateProduct: (product: Product) => Promise<void>;
+    deleteProduct: (id: string) => Promise<void>;
 
     articles: Article[];
-    addArticle: (article: Article) => void;
-    updateArticle: (article: Article) => void;
-    deleteArticle: (id: string) => void;
+    addArticle: (article: Article) => Promise<void>;
+    updateArticle: (article: Article) => Promise<void>;
+    deleteArticle: (id: string) => Promise<void>;
 
     events: Event[];
-    addEvent: (event: Event) => void;
-    updateEvent: (event: Event) => void;
-    deleteEvent: (id: string) => void;
+    addEvent: (event: Event) => Promise<void>;
+    updateEvent: (event: Event) => Promise<void>;
+    deleteEvent: (id: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -72,68 +73,119 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
-        const loadData = () => {
-            const storedProducts = localStorage.getItem('deswita_products');
-            const storedArticles = localStorage.getItem('deswita_articles');
-            const storedEvents = localStorage.getItem('deswita_events');
+        const loadData = async () => {
+            try {
+                // Products
+                let dbProducts = await dbService.getAllProducts();
+                if (dbProducts.length === 0) {
+                    const storedProducts = localStorage.getItem('deswita_products');
+                    if (storedProducts) {
+                        const parsedProducts: Product[] = JSON.parse(storedProducts);
+                        // Migration logic
+                        const migratedProducts = parsedProducts.map(p => ({
+                            ...p,
+                            images: p.images || (p.image ? [p.image] : []),
+                            sizes: p.sizes || (p.size ? [p.size] : [])
+                        }));
+                        for (const p of migratedProducts) await dbService.addProduct(p);
+                        dbProducts = migratedProducts;
+                    } else {
+                        const initialProducts = PRODUCTS.map(p => ({
+                            ...p,
+                            images: p.images || [p.image],
+                            sizes: p.sizes || (p.size ? [p.size] : [])
+                        }));
+                        for (const p of initialProducts) await dbService.addProduct(p);
+                        dbProducts = initialProducts;
+                    }
+                }
+                setProducts(dbProducts);
 
-            if (storedProducts) {
-                setProducts(JSON.parse(storedProducts));
-            } else {
-                setProducts(PRODUCTS);
-                localStorage.setItem('deswita_products', JSON.stringify(PRODUCTS));
-            }
+                // Articles
+                let dbArticles = await dbService.getAllArticles();
+                if (dbArticles.length === 0) {
+                    const storedArticles = localStorage.getItem('deswita_articles');
+                    if (storedArticles) {
+                        const parsedArticles = JSON.parse(storedArticles);
+                        for (const a of parsedArticles) await dbService.addArticle(a);
+                        dbArticles = parsedArticles;
+                    } else {
+                        for (const a of ARTICLES) await dbService.addArticle(a);
+                        dbArticles = ARTICLES;
+                    }
+                }
+                setArticles(dbArticles);
 
-            if (storedArticles) {
-                setArticles(JSON.parse(storedArticles));
-            } else {
-                setArticles(ARTICLES);
-                localStorage.setItem('deswita_articles', JSON.stringify(ARTICLES));
-            }
+                // Events
+                let dbEvents = await dbService.getAllEvents();
+                if (dbEvents.length === 0) {
+                    const storedEvents = localStorage.getItem('deswita_events');
+                    if (storedEvents) {
+                        const parsedEvents = JSON.parse(storedEvents);
+                        for (const e of parsedEvents) await dbService.addEvent(e);
+                        dbEvents = parsedEvents;
+                    } else {
+                        for (const e of INITIAL_EVENTS) await dbService.addEvent(e);
+                        dbEvents = INITIAL_EVENTS;
+                    }
+                }
+                setEvents(dbEvents);
 
-            if (storedEvents) {
-                setEvents(JSON.parse(storedEvents));
-            } else {
-                setEvents(INITIAL_EVENTS);
-                localStorage.setItem('deswita_events', JSON.stringify(INITIAL_EVENTS));
+                setIsLoaded(true);
+            } catch (error) {
+                console.error("Failed to load data from DB:", error);
             }
-            setIsLoaded(true);
         };
 
         loadData();
     }, []);
 
-    useEffect(() => {
-        if (isLoaded) {
-            localStorage.setItem('deswita_products', JSON.stringify(products));
-        }
-    }, [products, isLoaded]);
+    const addProduct = async (product: Product) => {
+        await dbService.addProduct(product);
+        setProducts(prev => [...prev, product]);
+    };
 
-    useEffect(() => {
-        if (isLoaded) {
-            localStorage.setItem('deswita_articles', JSON.stringify(articles));
-        }
-    }, [articles, isLoaded]);
+    const updateProduct = async (updated: Product) => {
+        await dbService.updateProduct(updated);
+        setProducts(prev => prev.map(p => p.id === updated.id ? updated : p));
+    };
 
-    useEffect(() => {
-        if (isLoaded) {
-            localStorage.setItem('deswita_events', JSON.stringify(events));
-        }
-    }, [events, isLoaded]);
+    const deleteProduct = async (id: string) => {
+        await dbService.deleteProduct(id);
+        setProducts(prev => prev.filter(p => p.id !== id));
+    };
 
-    const addProduct = (product: Product) => setProducts([...products, product]);
-    const updateProduct = (updated: Product) => setProducts(products.map(p => p.id === updated.id ? updated : p));
-    const deleteProduct = (id: string) => setProducts(products.filter(p => p.id !== id));
+    const addArticle = async (article: Article) => {
+        await dbService.addArticle(article);
+        setArticles(prev => [...prev, article]);
+    };
 
-    const addArticle = (article: Article) => setArticles([...articles, article]);
-    const updateArticle = (updated: Article) => setArticles(articles.map(a => a.id === updated.id ? updated : a));
-    const deleteArticle = (id: string) => setArticles(articles.filter(a => a.id !== id));
+    const updateArticle = async (updated: Article) => {
+        await dbService.updateArticle(updated);
+        setArticles(prev => prev.map(a => a.id === updated.id ? updated : a));
+    };
 
-    const addEvent = (event: Event) => setEvents([...events, event]);
-    const updateEvent = (updated: Event) => setEvents(events.map(e => e.id === updated.id ? updated : e));
-    const deleteEvent = (id: string) => setEvents(events.filter(e => e.id !== id));
+    const deleteArticle = async (id: string) => {
+        await dbService.deleteArticle(id);
+        setArticles(prev => prev.filter(a => a.id !== id));
+    };
 
-    if (!isLoaded) return null; // Or a loading spinner
+    const addEvent = async (event: Event) => {
+        await dbService.addEvent(event);
+        setEvents(prev => [...prev, event]);
+    };
+
+    const updateEvent = async (updated: Event) => {
+        await dbService.updateEvent(updated);
+        setEvents(prev => prev.map(e => e.id === updated.id ? updated : e));
+    };
+
+    const deleteEvent = async (id: string) => {
+        await dbService.deleteEvent(id);
+        setEvents(prev => prev.filter(e => e.id !== id));
+    };
+
+    if (!isLoaded) return null;
 
     return (
         <DataContext.Provider value={{

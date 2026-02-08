@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AdminLayout from '../../../layouts/AdminLayout';
+import ImageUpload from '../../../components/ImageUpload';
 import { useData } from '../../../contexts/DataContext';
 import { Article } from '../../../types';
 
@@ -36,12 +37,12 @@ const NewsForm: React.FC = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (id) {
-            updateArticle(formData);
+            await updateArticle(formData);
         } else {
-            addArticle(formData);
+            await addArticle(formData);
         }
         navigate('/admin/news');
     };
@@ -93,15 +94,10 @@ const NewsForm: React.FC = () => {
                         </div>
 
                         <div className="col-span-2">
-                            <label className="block text-sm font-bold text-slate-700 mb-2">URL Gambar</label>
-                            <input
-                                type="text"
-                                name="image"
+                            <ImageUpload
                                 value={formData.image}
-                                onChange={handleChange}
-                                required
-                                placeholder="https://..."
-                                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                onChange={(value) => setFormData(prev => ({ ...prev, image: value }))}
+                                label="Foto Berita"
                             />
                         </div>
 

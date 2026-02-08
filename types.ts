@@ -5,10 +5,12 @@ export interface Product {
   price: number;
   description: string;
   category: 'Drink' | 'Care' | 'Seed';
-  image: string;
+  image: string; // Deprecated, use images[0]
+  images?: string[];
   ingredients?: string;
   usage?: string;
-  size?: string;
+  size?: string; // Deprecated, use sizes[0]
+  sizes?: string[];
 }
 
 export interface Article {

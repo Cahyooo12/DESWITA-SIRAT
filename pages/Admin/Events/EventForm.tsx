@@ -34,12 +34,12 @@ const EventForm: React.FC = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (id) {
-            updateEvent(formData);
+            await updateEvent(formData);
         } else {
-            addEvent(formData);
+            await addEvent(formData);
         }
         navigate('/admin/events');
     };
