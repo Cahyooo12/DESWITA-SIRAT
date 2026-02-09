@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import EventScheduleModal from '../components/EventScheduleModal';
 
@@ -67,8 +68,13 @@ const Story: React.FC = () => {
                 {featuredArticle && (
                   <article className="group bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 border border-slate-100 flex flex-col">
                     <div className="relative aspect-video overflow-hidden">
+                      {featuredArticle.content ? (
+                        <Link to={`/story/${featuredArticle.id}`} className="absolute inset-0 z-10 w-full h-full" aria-label={featuredArticle.title} />
+                      ) : (
+                        <a href={featuredArticle.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 w-full h-full" aria-label={featuredArticle.title} />
+                      )}
                       <img src={featuredArticle.image} alt={featuredArticle.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s]" />
-                      <div className="absolute top-6 left-6 bg-primary text-white text-[10px] font-black px-5 py-2 rounded-full uppercase tracking-widest shadow-xl">
+                      <div className="absolute top-6 left-6 bg-primary text-white text-[10px] font-black px-5 py-2 rounded-full uppercase tracking-widest shadow-xl pointer-events-none">
                         {featuredArticle.category || 'Kisah Utama'}
                       </div>
                     </div>
@@ -78,15 +84,27 @@ const Story: React.FC = () => {
                         <span>•</span>
                         <span className="flex items-center gap-2"><span className="material-symbols-outlined text-primary text-base">visibility</span> {featuredArticle.views} Views</span>
                       </div>
-                      <h2 className="text-3xl md:text-4xl font-black text-slate-900 group-hover:text-primary transition-colors leading-tight tracking-tighter">
-                        {featuredArticle.title}
+                      <h2 className="text-3xl md:text-4xl font-black text-slate-900 group-hover:text-primary transition-colors leading-tight tracking-tighter relative">
+                        {featuredArticle.content ? (
+                          <Link to={`/story/${featuredArticle.id}`} className="hover:underline">{featuredArticle.title}</Link>
+                        ) : (
+                          <a href={featuredArticle.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{featuredArticle.title}</a>
+                        )}
                       </h2>
                       <p className="text-slate-500 text-lg leading-relaxed">
                         {featuredArticle.excerpt}
                       </p>
-                      <a href={featuredArticle.url} target="_blank" className="flex items-center gap-3 text-primary font-black uppercase text-sm tracking-widest mt-4">
-                        Baca Kisah Selengkapnya <span className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-2">east</span>
-                      </a>
+                      <div className="mt-4">
+                        {featuredArticle.content ? (
+                          <Link to={`/story/${featuredArticle.id}`} className="flex items-center gap-3 text-primary font-black uppercase text-sm tracking-widest">
+                            Baca Kisah Selengkapnya <span className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-2">east</span>
+                          </Link>
+                        ) : (
+                          <a href={featuredArticle.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-primary font-black uppercase text-sm tracking-widest">
+                            Baca Kisah Selengkapnya <span className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-2">east</span>
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </article>
                 )}
@@ -96,21 +114,34 @@ const Story: React.FC = () => {
                   <div className="grid grid-cols-1 gap-8">
                     {otherArticles.map(article => (
                       <article key={article.id} className="group bg-white rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-500 border border-slate-50 flex flex-col md:flex-row gap-8 items-center">
-                        <div className="w-full md:w-56 h-48 rounded-2xl overflow-hidden shrink-0">
+                        <div className="w-full md:w-56 h-48 rounded-2xl overflow-hidden shrink-0 relative">
+                          {article.content ? (
+                            <Link to={`/story/${article.id}`} className="absolute inset-0 z-10 w-full h-full" aria-label={article.title} />
+                          ) : (
+                            <a href={article.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 w-full h-full" aria-label={article.title} />
+                          )}
                           <img src={article.image} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                         </div>
-                        <div className="flex flex-col gap-3">
+                        <div className="flex flex-col gap-3 flex-grow">
                           <div className="flex items-center gap-3">
                             <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{article.date}</span>
                             {article.category && <span className="bg-slate-100 px-2 py-0.5 rounded-full text-[9px] font-bold text-slate-500 uppercase tracking-wider">{article.category}</span>}
                           </div>
-                          <h3 className="text-xl font-black text-slate-900 group-hover:text-primary transition-colors leading-tight">
-                            {article.title}
+                          <h3 className="text-xl font-black text-slate-900 group-hover:text-primary transition-colors leading-tight relative">
+                            {article.content ? (
+                              <Link to={`/story/${article.id}`} className="hover:underline">{article.title}</Link>
+                            ) : (
+                              <a href={article.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{article.title}</a>
+                            )}
                           </h3>
                           <p className="text-[#795e8d] text-sm line-clamp-2 leading-relaxed">
                             {article.excerpt}
                           </p>
-                          <a href={article.url} target="_blank" className="text-primary font-black uppercase text-[10px] tracking-widest mt-2 flex items-center gap-2">Baca Cerita <span className="material-symbols-outlined text-sm">arrow_forward</span></a>
+                          {article.content ? (
+                            <Link to={`/story/${article.id}`} className="text-primary font-black uppercase text-[10px] tracking-widest mt-2 flex items-center gap-2">Baca Cerita <span className="material-symbols-outlined text-sm">arrow_forward</span></Link>
+                          ) : (
+                            <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-primary font-black uppercase text-[10px] tracking-widest mt-2 flex items-center gap-2">Baca Cerita <span className="material-symbols-outlined text-sm">arrow_forward</span></a>
+                          )}
                         </div>
                       </article>
                     ))}

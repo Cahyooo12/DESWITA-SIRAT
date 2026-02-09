@@ -18,10 +18,14 @@ export interface Article {
   title: string;
   excerpt: string;
   image: string;
-  url: string;
+  url?: string;
+  content?: string;
   views: string;
   date: string;
+  dateISO?: string;
+  time?: string;
   category?: string;
+  quote?: string;
 }
 
 export interface Benefit {
@@ -39,6 +43,7 @@ export interface CartItem extends Product {
 export interface Event {
   id: string;
   date: string;
+  dateISO?: string;
   title: string;
   time: string;
   location: string;

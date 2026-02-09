@@ -6,11 +6,13 @@
       "price": 10000,
       "description": "Teh celup bunga telang praktis siap seduh.",
       "category": "Drink",
-      "image": "",
+      "image": "https://images.unsplash.com/photo-1594631252845-29fc458681b3?auto=format&fit=crop&q=80&w=400",
       "ingredients": "100% Bunga Telang (Clitoria ternatea) pilihan yang dikeringkan.",
       "usage": "Seduh 1 kantong teh dalam 200ml air panas (80-90°C) selama 3-5 menit.",
       "size": "Isi 10 kantong teh celup (2g/kantong)",
-      "images": [],
+      "images": [
+        "https://images.unsplash.com/photo-1594631252845-29fc458681b3?auto=format&fit=crop&q=80&w=400"
+      ],
       "sizes": [
         "Isi 10 kantong teh celup (2g/kantong)"
       ]
@@ -205,63 +207,14 @@
   ],
   "articles": [
     {
-      "id": "a1",
-      "title": "Warga Bantul Olah Bunga Telang Bernilai Ratusan Ribu",
-      "excerpt": "Dianggap tanaman liar, warga Bantul berhasil mengubah bunga telang menjadi produk bernilai tinggi.",
-      "image": "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&q=80&w=600",
-      "url": "https://jogja.suara.com/read/2020/10/01/071442/dianggap-tanaman-liar-warga-bantul-olah-bunga-telang-bernilai-ratusan-ribu",
-      "views": "1.2k",
-      "date": "1 Okt 2020",
-      "category": "Produk & UMKM"
-    },
-    {
-      "id": "a1",
-      "title": "Warga Bantul Olah Bunga Telang Bernilai Ratusan Ribu",
-      "excerpt": "Dianggap tanaman liar, warga Bantul berhasil mengubah bunga telang menjadi produk bernilai tinggi.",
-      "image": "https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&q=80&w=600",
-      "url": "https://jogja.suara.com/read/2020/10/01/071442/dianggap-tanaman-liar-warga-bantul-olah-bunga-telang-bernilai-ratusan-ribu",
-      "views": "1.2k",
-      "date": "1 Okt 2020",
-      "category": "Produk & UMKM"
-    },
-    {
-      "id": "a2",
-      "title": "Usai Di-PHK, Pria Ini 'Sulap' Bunga Telang Jadi Sabun",
-      "excerpt": "Kena PHK pandemi tidak membuat Danang putus asa. Ia mengolah bunga telang jadi teh dan sabun.",
-      "image": "https://images.unsplash.com/photo-1512413316925-fd4b93f31521?auto=format&fit=crop&q=80&w=600",
-      "url": "https://finance.detik.com/solusiukm/d-5195744/usai-di-phk-pria-ini-sulap-bunga-telang-jadi-sabun-hingga-teh",
-      "views": "2.5k",
-      "date": "30 Sep 2020",
-      "category": "Kisah Komunitas"
-    },
-    {
-      "id": "a2",
-      "title": "Usai Di-PHK, Pria Ini 'Sulap' Bunga Telang Jadi Sabun",
-      "excerpt": "Kena PHK pandemi tidak membuat Danang putus asa. Ia mengolah bunga telang jadi teh dan sabun.",
-      "image": "https://images.unsplash.com/photo-1512413316925-fd4b93f31521?auto=format&fit=crop&q=80&w=600",
-      "url": "https://finance.detik.com/solusiukm/d-5195744/usai-di-phk-pria-ini-sulap-bunga-telang-jadi-sabun-hingga-teh",
-      "views": "2.5k",
-      "date": "30 Sep 2020",
-      "category": "Kisah Komunitas"
-    },
-    {
-      "id": "a3",
-      "title": "Sekilo Bunga Telang Dihargai Rp500 Ribu",
-      "excerpt": "Permintaan bunga telang kering semakin meningkat hingga mencapai pasar internasional.",
-      "image": "https://images.unsplash.com/photo-1594631252845-29fc458681b3?auto=format&fit=crop&q=80&w=600",
-      "url": "https://jogja.idntimes.com/business/economy/daruwaskita/sekilo-bunga-telang-dihargai-rp500-ribu-diminati-hingga-bangladesh",
-      "views": "3.1k",
-      "date": "2 Okt 2020",
-      "category": "Produk & UMKM"
-    },
-    {
-      "id": "a3",
-      "title": "Sekilo Bunga Telang Dihargai Rp500 Ribu",
-      "excerpt": "Permintaan bunga telang kering semakin meningkat hingga mencapai pasar internasional.",
-      "image": "https://images.unsplash.com/photo-1594631252845-29fc458681b3?auto=format&fit=crop&q=80&w=600",
-      "url": "https://jogja.idntimes.com/business/economy/daruwaskita/sekilo-bunga-telang-dihargai-rp500-ribu-diminati-hingga-bangladesh",
-      "views": "3.1k",
-      "date": "2 Okt 2020",
+      "id": "a1770597844049",
+      "title": "Geliat Baru Si Telang: Menjemput Sejahtera Lewat Panen Raya dan Pasar Anyar",
+      "excerpt": "\"Wajah Baru Si Telang: Panen Melimpah, Ekonomi Merakah.\" Dua momentum besar—Panen Raya dan Peresmian Pasar—bersatu memacu detak ekonomi Si Telang menuju kemandirian dan kesejahteraan warga.",
+      "image": "",
+      "url": "",
+      "content": "Si Telang kini tak lagi sekadar hamparan sawah yang sunyi. Pasca perayaan Panen Raya yang riuh rendah dan peresmian pasar desa yang dinanti-nanti, wilayah ini seolah menyongsong babak baru. Ada napas optimisme yang berhembus di antara bulir padi yang menguning dan riuh transaksi di lapak-lapak pedagang.\n\nDua peristiwa besar ini—panen dan peresmian pasar—bukanlah kejadian yang berdiri sendiri, melainkan sebuah sinergi yang menandai kebangkitan ekonomi lokal.\n\nPesta \"Emas\" di Lahan Pasang Surut\nBagi masyarakat Si Telang, Panen Raya adalah hari raya kedua. Sebagai salah satu lumbung pangan potensial (khususnya di lahan pasang surut), keberhasilan panen tahun ini menjadi bukti ketangguhan petani.\n\nMusim ini, hasil panen melimpah ruah. Bulir padi yang bernas adalah jawaban atas kerja keras berbulan-bulan melawan cuaca yang tak menentu dan tantangan hama. Namun, keberhasilan produksi di hulu (sawah) seringkali menjadi masalah jika tidak ada kejelasan di hilir (penjualan). Di sinilah peran vital infrastruktur ekonomi baru mulai terasa.\n\nPasar Baru: Memutus Rantai Tengkulak\nPeresmian pasar baru di kawasan Si Telang menjadi game changer (pengubah keadaan). Selama bertahun-tahun, tantangan klasik petani pasca panen adalah jatuhnya harga gabah atau ketergantungan pada rantai distribusi yang panjang dan merugikan (tengkulak).\n\nKehadiran pasar yang representatif dan diresmikan secara formal membawa beberapa dampak langsung:\n\nStabilitas Harga: Dengan adanya pusat transaksi yang jelas, standar harga komoditas menjadi lebih transparan.\n\nAkses Langsung ke Konsumen: Petani kini memiliki opsi untuk menjual hasil bumi—baik beras, sayuran sela, maupun hasil kebun—langsung ke pasar lokal tanpa perantara berlapis.\n\nPerputaran Uang di Desa: Uang hasil panen tidak \"lari\" ke kota, melainkan berputar kembali di pasar desa, menghidupi pedagang kecil, penyedia jasa angkut, hingga warung makanan.\n\nWajah Ekonomi yang Terintegrasi\nMomen pasca panen raya yang berbarengan dengan operasional pasar menciptakan ekosistem ekonomi yang circular (berputar).\n\n\"Si Telang sedang bertransformasi dari sekadar sentra produksi menjadi sentra ekonomi mandiri.\"\n\nBayangkan skenarionya: Petani menerima uang tunai dari hasil panen yang memuaskan. Dengan uang tersebut, daya beli mereka meningkat. Mereka berbelanja kebutuhan rumah tangga, perlengkapan tani, dan kebutuhan sekunder di pasar yang baru diresmikan. Pedagang pasar mendapatkan omzet, dan retribusi pasar masuk ke kas desa atau pengelola untuk perawatan fasilitas. Ini adalah siklus kesejahteraan yang diimpikan banyak desa.\n\nTantangan dan Harapan ke Depan\nTentu saja, euforia ini harus dijaga. Tantangan berikutnya bagi pemangku kepentingan di Si Telang adalah pemeliharaan (maintenance).\n\nManajemen Pasar: Pengelola pasar harus memastikan kebersihan, keamanan, dan ketertiban agar pasar tetap ramai dikunjungi.\n\nInovasi Pertanian: Petani harus didorong untuk tidak hanya menjual gabah kering panen, tetapi mungkin mulai mengolah menjadi beras kemasan khas Si Telang untuk nilai tambah yang lebih tinggi.\n\nPenutup\nSi Telang pasca panen raya dan peresmian pasar adalah wajah optimisme pedesaan. Di sana, keringat petani terbayar lunas, dan denyut nadi ekonomi berdetak makin kencang. Ini bukan akhir dari sebuah musim tanam, melainkan awal dari kemandirian ekonomi yang berkelanjutan.\n\nSi Telang telah membuktikan, bahwa ketika produksi pangan bertemu dengan infrastruktur pasar yang baik, kesejahteraan bukanlah mimpi di siang bolong.",
+      "views": "0",
+      "date": "9 Feb 2026",
       "category": "Produk & UMKM"
     }
   ],

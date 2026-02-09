@@ -63,28 +63,41 @@ const EventForm: React.FC = () => {
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-bold text-slate-700 mb-2">Tanggal (contoh: 1 Okt)</label>
-                            <input
-                                type="text"
-                                name="date"
-                                value={formData.date}
-                                onChange={handleChange}
-                                required
-                                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                            />
-                        </div>
+                        <div className="grid grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-2">Tanggal</label>
+                                <input
+                                    type="date"
+                                    name="dateISO"
+                                    value={formData.dateISO || new Date().toISOString().split('T')[0]}
+                                    onChange={(e) => {
+                                        const newDateISO = e.target.value;
+                                        const dateObj = new Date(newDateISO);
+                                        const formattedDate = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 
-                        <div>
-                            <label className="block text-sm font-bold text-slate-700 mb-2">Waktu (contoh: 08:00 WIB)</label>
-                            <input
-                                type="text"
-                                name="time"
-                                value={formData.time}
-                                onChange={handleChange}
-                                required
-                                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                            />
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            dateISO: newDateISO,
+                                            date: formattedDate
+                                        }));
+                                    }}
+                                    required
+                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-2">Waktu (Jam)</label>
+                                <input
+                                    type="time"
+                                    name="time"
+                                    value={formData.time?.replace(' WIB', '') || ''}
+                                    onChange={(e) => {
+                                        setFormData(prev => ({ ...prev, time: e.target.value + ' WIB' }));
+                                    }}
+                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                />
+                            </div>
                         </div>
 
                         <div className="col-span-2">

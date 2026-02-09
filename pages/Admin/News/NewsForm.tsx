@@ -16,6 +16,7 @@ const NewsForm: React.FC = () => {
         excerpt: '',
         image: '',
         url: '',
+        content: '',
         views: '0',
         date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
         category: 'Produk & UMKM'
@@ -39,12 +40,23 @@ const NewsForm: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (id) {
-            await updateArticle(formData);
-        } else {
-            await addArticle(formData);
+
+        if (!formData.content?.trim() && !formData.url?.trim()) {
+            alert('Harap isi "Isi Berita" atau "Link Sumber Lengkap" (salah satu harus diisi).');
+            return;
         }
-        navigate('/admin/news');
+
+        try {
+            if (id) {
+                await updateArticle(formData);
+            } else {
+                await addArticle(formData);
+            }
+            navigate('/admin/news');
+        } catch (error) {
+            console.error(error);
+            alert('Gagal menyimpan berita. Pastikan server backend berjalan (npm run server).');
+        }
     };
 
     return (
@@ -84,10 +96,20 @@ const NewsForm: React.FC = () => {
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2">Tanggal</label>
                             <input
-                                type="text"
-                                name="date"
-                                value={formData.date}
-                                onChange={handleChange}
+                                type="date"
+                                name="dateISO"
+                                value={formData.dateISO || new Date().toISOString().split('T')[0]}
+                                onChange={(e) => {
+                                    const newDateISO = e.target.value;
+                                    const dateObj = new Date(newDateISO);
+                                    const formattedDate = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        dateISO: newDateISO,
+                                        date: formattedDate
+                                    }));
+                                }}
                                 required
                                 className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                             />
@@ -102,14 +124,25 @@ const NewsForm: React.FC = () => {
                         </div>
 
                         <div className="col-span-2">
-                            <label className="block text-sm font-bold text-slate-700 mb-2">Link Sumber Lengkap</label>
+                            <label className="block text-sm font-bold text-slate-700 mb-2">Isi Berita (Opsional jika ada Link Sumber)</label>
+                            <textarea
+                                name="content"
+                                value={formData.content || ''}
+                                onChange={handleChange}
+                                rows={10}
+                                placeholder="Tulis is berita di sini..."
+                                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                            />
+                        </div>
+
+                        <div className="col-span-2">
+                            <label className="block text-sm font-bold text-slate-700 mb-2">Link Sumber Lengkap (Opsional)</label>
                             <input
                                 type="text"
                                 name="url"
-                                value={formData.url}
+                                value={formData.url || ''}
                                 onChange={handleChange}
-                                required
-                                placeholder="https://..."
+                                placeholder="https://... (Kosongkan jika berita ditulis langsung di sini)"
                                 className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                             />
                         </div>
@@ -122,6 +155,18 @@ const NewsForm: React.FC = () => {
                                 onChange={handleChange}
                                 required
                                 rows={3}
+                                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                            />
+                        </div>
+
+                        <div className="col-span-2">
+                            <label className="block text-sm font-bold text-slate-700 mb-2">Kutipan / Highlight (Opsional)</label>
+                            <textarea
+                                name="quote"
+                                value={formData.quote || ''}
+                                onChange={handleChange}
+                                rows={3}
+                                placeholder="Masukkan kutipan menarik untuk ditampilkan di dalam artikel..."
                                 className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                             />
                         </div>

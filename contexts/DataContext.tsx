@@ -185,7 +185,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setEvents(prev => prev.filter(e => e.id !== id));
     };
 
-    if (!isLoaded) return null;
+    // if (!isLoaded) return null; // Removed to prevent permanent white screen on error
 
     return (
         <DataContext.Provider value={{

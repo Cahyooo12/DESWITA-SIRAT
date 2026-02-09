@@ -36,7 +36,17 @@ const NewsList: React.FC = () => {
                                             <img src={article.image} alt="" className="w-full h-full object-cover" />
                                         </div>
                                     </td>
-                                    <td className="p-4 font-bold text-slate-900 max-w-xs truncate" title={article.title}>{article.title}</td>
+                                    <td className="p-4 font-bold text-slate-900 max-w-xs truncate" title={article.title}>
+                                        {article.content ? (
+                                            <Link to={`/story/${article.id}`} target="_blank" className="hover:text-primary hover:underline transition-colors">
+                                                {article.title}
+                                            </Link>
+                                        ) : (
+                                            <a href={article.url} target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline transition-colors">
+                                                {article.title}
+                                            </a>
+                                        )}
+                                    </td>
                                     <td className="p-4">
                                         <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-bold">
                                             {article.category || '-'}
@@ -45,7 +55,16 @@ const NewsList: React.FC = () => {
                                     <td className="p-4 text-slate-600 text-sm">{article.date}</td>
                                     <td className="p-4">
                                         <div className="flex items-center gap-2">
-                                            <Link to={`/admin/news/edit/${article.id}`} className="size-8 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center hover:bg-yellow-200">
+                                            {article.content ? (
+                                                <Link to={`/story/${article.id}`} className="size-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200" title="Lihat Berita">
+                                                    <span className="material-symbols-outlined text-lg">visibility</span>
+                                                </Link>
+                                            ) : (
+                                                <a href={article.url} target="_blank" rel="noopener noreferrer" className="size-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200" title="Lihat Berita">
+                                                    <span className="material-symbols-outlined text-lg">visibility</span>
+                                                </a>
+                                            )}
+                                            <Link to={`/admin/news/edit/${article.id}`} className="size-8 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center hover:bg-yellow-200" title="Edit">
                                                 <span className="material-symbols-outlined text-lg">edit</span>
                                             </Link>
                                             <button
@@ -53,6 +72,7 @@ const NewsList: React.FC = () => {
                                                     if (window.confirm('Yakin ingin menghapus berita ini?')) deleteArticle(article.id);
                                                 }}
                                                 className="size-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200"
+                                                title="Hapus"
                                             >
                                                 <span className="material-symbols-outlined text-lg">delete</span>
                                             </button>
